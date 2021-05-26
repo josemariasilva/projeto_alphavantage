@@ -18,7 +18,7 @@ def createDb() -> None:
 
 
     cursor.execute("""CREATE TABLE prices (
-                            priceAid INTEGER PRIMARY KEY AUTOINCREMENT,
+                            priceid INTEGER PRIMARY KEY AUTOINCREMENT,
                             date DATETIME,
                             active INTEGER,
                             price DOUBLE,
