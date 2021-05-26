@@ -14,24 +14,11 @@ class PriceModel(StockModel):
         self.active  = active
         self.price = price
 
-
-
-    @classmethod
-    def find_by_date(cls, date:datetime):
-        query = """SELECT *"""
-        result, connection = cls.command_execute("")
     
     @classmethod
     def insert_table(cls, args) -> None:
         cursor, connection = cls.command_execute(cls, "INSERT INTO prices VALUES(NULL, ?, ?, ?, ?)",args)
-        connection.commit()
-        connection.close()
 
-        
-
-    @classmethod
-    def find_specifie_table(cls, symbol:str):
-        cursor, connection = cls.command_execute()
 
     @classmethod
     def find_all(cls, _id:int) -> list:
@@ -39,4 +26,24 @@ class PriceModel(StockModel):
         result = cursor.fetchall()
         connection.close()
         return result
+
+    @classmethod
+    def update(cls, data):
+        cursor, connection = cls.command_execute("SELECT * FROM prices WHERE date = ? ", (data[1],))
+        row = cursor.fetchone()
+
+        if cursor is None:
+            cls.insert_table(*row)
+        else:
+            cursor.execute("UPDATE prices SET price = ? WHERE date = ?",(data[2], data[1]))
+        
+        connection.commit()
+        connection.close()
+
+
+        
+            
+
+            
+        
         
