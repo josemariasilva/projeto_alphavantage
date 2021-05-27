@@ -1,61 +1,40 @@
-
+import logging
 from model.prices_model import PriceModel
-import requests
-from requests import Response
 from model.stock_model import StockModel
+from tools.request_json import integrate
+from tools.logger_cache import custom_logger
+from datetime import timedelta
+
+try:
+    from timeloop import Timeloop
+except ImportError as e:
+    print(e, "pip install timeloop")
 
 
-def run():
-    # Definição de parametros do projeto
 
-    stocks = StockModel.find_all_enabled()
+loop = Timeloop()
+log = custom_logger(logging.DEBUG)
+
+
+@loop.job(interval=timedelta(seconds=20))
+def manager():
+    log.info("INICIALIZANDO PROCESSO")
+
+    # listas de cadastros filtrado (habilitados)
+    stocks = StockModel.find_all_enabled() 
+    
+
     for i in stocks:
-        print(i)
+        for j in integrate(i[1]):
+            PriceModel.update(j)
 
-    print("="*100)
-    # id de inserção da tabela price
-    for i in integrate():
-        PriceModel.insert_table(i)
-    print("=="*50)
-
-    for i in integrate("PETR4.SAO"):
-        PriceModel.insert_table(i)
-
-    print(PriceModel.find_all(0))
-    print("=="*50)
-    print(PriceModel.find_all(1))
-    
+    print(StockModel.select_join())
     
 
-    
-
-def integrate(symbol:str = "B3SA3.SAO") -> tuple:
-
-    
-    URL: str = "https://www.alphavantage.co/query"
-    QUERY = {"function": "TIME_SERIES_DAILY",
-             "symbol": symbol,
-             "apikey": "P5J89M4KGGN95FLY"
-             }
-    test: Response = requests.get(URL, params=QUERY).json()
-    stockid = StockModel.filter(test["Meta Data"]["2. Symbol"])
-    data_keys = test["Time Series (Daily)"].keys()
-
-    stockid = [stockid[0] for _ in range(len(data_keys))]
-
-    _close = []
-    _active = []
-
-    for data in data_keys:
-        _close.append(test["Time Series (Daily)"][data]["4. close"])
-        _active.append(test["Time Series (Daily)"][data]["5. volume"])
-    
-    tutu = zip(data_keys, _active, _close, stockid)
-
-    return tutu
-
+    log.info("FIM DO PROCESSO")
     
 
 
 if __name__ == "__main__":
-    run()
+
+    loop.start(block=True)
