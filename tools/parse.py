@@ -1,6 +1,9 @@
 from datetime import date
 import calendar
+from tools.db_manager import create_db_table, update_table
 from typing import Iterable
+import argparse
+
 
 
 def parse_last_week(date_formated: Iterable) -> bool:
@@ -29,3 +32,15 @@ def parse_last_week(date_formated: Iterable) -> bool:
     if (_date.day >= _ld_date.day) and (_date.month == _ld_date.month):
         return True
     return False
+
+def parse_arg() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--create", nargs=3, default=[], help="create and insert on database")
+    parser.add_argument("--update", nargs=2, default=[], help="update value in table")
+
+    value_c = parser.parse_args()
+    value_u = parser.parse_args()
+    create_db_table(value_c.create)
+    update_table(value_u.update)
+
+
