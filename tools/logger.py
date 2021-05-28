@@ -1,5 +1,4 @@
 import logging
-import inspect
 
 
 def custom_logger(logger_level):

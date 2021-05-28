@@ -32,8 +32,8 @@ def integrate(symbol:str = "B3SA3.SAO") -> Iterable:
 
     
     data_request: Response = requests.get(URL, params=QUERY).json()
-    data_keys = list(data_request["Time Series (Daily)"].keys())
-    print(data_keys)
+    data_keys = data_request["Time Series (Daily)"].keys()
+    
 
 
     stockid = StockModel.filter(symbol)
