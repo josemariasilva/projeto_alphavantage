@@ -6,11 +6,11 @@ from model.stock_model import StockModel
 
 log = custom_logger(logging.DEBUG)
 
+
 class PriceModel(StockModel):
 
     """Classe modelo para o gerenciamento do banco de dados na tabela de preços das ações"""
 
-    
     @staticmethod
     def insert_table(args: Iterable[Any]) -> None:
         """
@@ -67,20 +67,20 @@ class PriceModel(StockModel):
         ----------
             None
         """
-        
-    
+
         cursor, connection = PriceModel.command_execute(
-            "SELECT * FROM prices WHERE date = ? AND stockid = ?", (data[0],data[3]))
+            "SELECT * FROM prices WHERE date = ? AND stockid = ?", (data[0], data[3]))
         row = cursor.fetchone()
 
         if row is not None:
             cursor.execute(
                 "UPDATE prices SET price = ? WHERE (date = ? AND stockid = ? AND price != ?)", (data[2], data[0], data[3], data[2]))
-            log.info(f"TABELA ATUALIZADA: {data}")
+            #log.info(f"TABELA ATUALIZADA: {data}")
             connection.commit()
             connection.close()
             
+
         else:
             PriceModel.insert_table(data)
-            log.info(f"INSERIDO NA TABELA: {data}")
+            #log.info(f"INSERIDO NA TABELA: {data}")
             
