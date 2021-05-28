@@ -3,8 +3,8 @@ import inspect
 
 
 def custom_logger(logger_level):
-    logger_name = inspect.stack()[1][3]
-    logger = logging.getLogger(logger_name)
+    
+    logger = logging.getLogger("logfile.log")
     logger.setLevel(logging.DEBUG)
     c_handler = logging.StreamHandler()
     c_handler.setLevel(logger_level)
@@ -13,6 +13,9 @@ def custom_logger(logger_level):
                                     datefmt="%Y/%m/%d %I:%M:%S %p")
     
     c_handler.setFormatter(formatter)
+    
+    if (logger.hasHandlers()):
+        logger.handlers.clear()
     logger.addHandler(c_handler)
     return logger
 

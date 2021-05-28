@@ -1,46 +1,16 @@
-import logging
+
 import sqlite3
-from sqlite3.dbapi2 import Cursor, connect
-import datetime
+from sqlite3.dbapi2 import Connection, Cursor
 from typing import Any, Iterable
-from tools.logger_cache import custom_logger
+
 
 
 class StockModel:
 
-    """Classe modelo para o gerenciamento do banco de dados na tabela de stock das ações
+    """Classe modelo para o gerenciamento do banco de dados na tabela de stock das ações"""
 
-    Parametros
-    ----------
-    _id : int
-        indice da ação
-
-    symbol : str
-        identificador da ação
-
-    name : str
-        nome da ação
-
-    enabled : float
-        marcador de utlização
-
-    Atributos
-    ----------
-    _id : int,
-    symbol : datetime,
-    name : float,
-    enabled : float
-
-    armazenados na classe
-    """
-
-    def __init__(self, id: int, symbol: str, name: str, enable: bool) -> None:
-        self.id = id
-        self.symbol = symbol
-        self.name = name
-        self.enable = enable
-
-    def command_execute(self, query: str, params: Any = None) -> Iterable:
+    @staticmethod
+    def command_execute(query: str, params: Any = None) -> Iterable:
         """
         simplifica as chamadas e conexões com o banco de dados.
 
@@ -67,17 +37,8 @@ class StockModel:
         cursor.execute(query, params)
         return cursor, connection
 
-    @classmethod
-    def find_by_id(cls, _id: int):
-        result, connection = cls.command_execute(
-            cls, "SELECT * FROM stock WHERE id=?", (_id))
-        connection.close()
-        print(result.fetchone())
-        stock = cls(*result)
-        return stock
-
-    @classmethod
-    def find_all_enabled(cls) -> Iterable:
+    @staticmethod
+    def find_all_enabled() -> Iterable[Any]:
         """
         Filtra apenas os cadatros hablitados no banco de dados.
 
@@ -86,14 +47,14 @@ class StockModel:
             retorna uma lista de cadastros habilitados
         """
 
-        result, connection = cls.command_execute(
-            cls, "SELECT * FROM stock WHERE enabled=1")
+        result, connection = StockModel.command_execute(
+            "SELECT * FROM stock WHERE enabled=1")
         rows = result.fetchall()
         connection.close()
         return rows
 
     @staticmethod
-    def filter(value: str) -> Iterable:
+    def filter(value: str) -> Iterable[int]:
         """
         Filtra os cadastros pelo simbolo.
 
@@ -110,16 +71,7 @@ class StockModel:
         connection = sqlite3.connect("stock_prices.db")
         cursor = connection.cursor()
         r = cursor.execute(
-            "SELECT stockid FROM stock WHERE symbol = ?", (value,))
-        r = r.fetchone()
+            "SELECT stockid FROM stock WHERE symbol = ?", (value,)).fetchone()
+
         connection.close()
         return r
-
-    @staticmethod
-    def select_join() -> Iterable:
-        connection = sqlite3.connect("stock_prices.db")
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM prices")
-        result = cursor.fetchall()
-        connection.close()
-        return result
