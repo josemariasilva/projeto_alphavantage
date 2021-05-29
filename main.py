@@ -1,24 +1,16 @@
 import logging
-from sqlite3.dbapi2 import OperationalError, connect
+from sqlite3.dbapi2 import OperationalError
+import threading
 from tools.parse import parse_arg
 from model.prices_model import PriceModel
 from model.stock_model import StockModel
 from tools.request_json import integrate
 from tools.logger import custom_logger
-from datetime import timedelta
-from tools.db_manager import create_db_table, update_table
-
-try:
-    from timeloop import Timeloop
-except ImportError as e:
-    print(e, "pip install timeloop")
 
 
-loop = Timeloop()
 log = custom_logger(logging.DEBUG)
 
 
-@loop.job(interval=timedelta(seconds=20))
 def main():
     """
     Inicializa o processo de requisição por argumentos passados pelo terminal.
@@ -30,12 +22,7 @@ def main():
     com preço diferente.
     """
 
-    try:
-        parse_arg()
-    except [ValueError, OperationalError] as e:
-        print(
-            e, "Argumentos invalidos: --create [symbol:str,name:str,enabled:int] | --update [symbol:str, enabled:int]")
-
+    
     # listas de cadastros filtrado (habilitados)
     stocks = StockModel.find_all_enabled()
 
@@ -48,9 +35,16 @@ def main():
                 PriceModel.update(j)
     except:
         log.info("FALHA NA REQUISIÇÃO, SIMBOLO INVALIDO")
-        loop.stop()
+        
+    log.info("REQUISIÇÃO COMPLETA.")
 
 
 if __name__ == "__main__":
 
-    loop.start(block=True)
+    #
+    if parse_arg():
+        log.info("ALTERAÇÃO COMPLETA.")
+    else:
+        t1 = threading.Timer(20, main())
+        t1.start()
+    
