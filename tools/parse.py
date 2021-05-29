@@ -5,12 +5,11 @@ from typing import Iterable
 import argparse
 
 
-
 def parse_last_week(date_formated: Iterable) -> bool:
     """filtra a ultima semana do mes.\n 
     (ultimo dia do calendario) - 7 >= (data do cadastro). \n
     compara com o dia cadastrado se esta dentro do range.
-    
+
     Parametros:
     ----------
         data_formated : Iterable
@@ -33,14 +32,32 @@ def parse_last_week(date_formated: Iterable) -> bool:
         return True
     return False
 
-def parse_arg() -> None:
+
+def parse_arg() -> bool:
+    """Argumentos inseridos no momento de execução
+
+        retorno:
+        --------
+            retorna True se a alteração estiver completa ou False caso ter alteração no banco de dados.
+    """
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--create", nargs=3, default=[], help="create and insert on database")
-    parser.add_argument("--update", nargs=2, default=[], help="update value in table")
+    parser.add_argument("--create", nargs=3, default=[], metavar='c',
+                        help="c argumentos:[symbol, name, enabled]")
+    parser.add_argument("--update", nargs=2, default=[],metavar='u',
+                        help="u argumentos:[symbol, enabled]")
 
     value_c = parser.parse_args()
     value_u = parser.parse_args()
-    create_db_table(value_c.create)
-    update_table(value_u.update)
+    if any(value_c.create):
+        create_db_table(value_c.create)
+        return True
+        
+    elif any(value_u.update):
+        update_table(value_u.update)
+        return True
 
-
+    else:
+        return False
+    
+        
