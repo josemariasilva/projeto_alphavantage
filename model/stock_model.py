@@ -2,7 +2,6 @@ import sqlite3
 from typing import Any, Iterable
 
 
-
 class StockModel:
 
     """Classe modelo para o gerenciamento do banco de dados na tabela de stock das ações"""

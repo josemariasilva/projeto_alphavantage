@@ -75,12 +75,9 @@ class PriceModel(StockModel):
         if row is not None:
             cursor.execute(
                 "UPDATE prices SET price = ? WHERE (date = ? AND stockid = ? AND price != ?)", (data[2], data[0], data[3], data[2]))
-            #log.info(f"TABELA ATUALIZADA: {data}")
+
             connection.commit()
             connection.close()
-            
 
         else:
             PriceModel.insert_table(data)
-            #log.info(f"INSERIDO NA TABELA: {data}")
-            
