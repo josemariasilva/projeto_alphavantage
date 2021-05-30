@@ -1,5 +1,5 @@
+import argparse
 import logging
-from sqlite3.dbapi2 import OperationalError
 import threading
 from tools.parse import parse_arg
 from model.prices_model import PriceModel
@@ -10,8 +10,7 @@ from tools.logger import custom_logger
 
 log = custom_logger(logging.DEBUG)
 
-
-def main():
+def main(api_key):
     """
     Inicializa o processo de requisição por argumentos passados pelo terminal.
 
@@ -31,20 +30,22 @@ def main():
     try:
         for i in stocks:
 
-            for j in integrate(i[1]):
+            for j in integrate(api_key, i[1]):
                 PriceModel.update(j)
     except:
-        log.info("FALHA NA REQUISIÇÃO, SIMBOLO INVALIDO")
+        log.info("FALHA NA REQUISIÇÃO, SIMBOLO INVALIDO OU APIKEY INVALIDA")
         
     log.info("REQUISIÇÃO COMPLETA.")
 
 
 if __name__ == "__main__":
 
-    
-    if parse_arg():
+
+
+    result = parse_arg()
+    if result[0]:
         log.info("ALTERAÇÃO COMPLETA.")
     else:
-        t1 = threading.Timer(20, main())
+        t1 = threading.Timer(20, main(result))
         t1.start()
     
