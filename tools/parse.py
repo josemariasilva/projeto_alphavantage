@@ -1,7 +1,7 @@
 from datetime import date
 import calendar
 from tools.db_manager import create_db_table, update_table
-from typing import Iterable
+from typing import Any, Iterable
 import argparse
 
 
@@ -33,7 +33,7 @@ def parse_last_week(date_formated: Iterable) -> bool:
     return False
 
 
-def parse_arg() -> bool:
+def parse_arg() -> Iterable:
     """Argumentos inseridos no momento de execução
 
         retorno:
@@ -44,20 +44,22 @@ def parse_arg() -> bool:
     parser = argparse.ArgumentParser()
     parser.add_argument("--create", nargs=3, default=[], metavar='c',
                         help="c argumentos:[symbol, name, enabled]")
-    parser.add_argument("--update", nargs=2, default=[],metavar='u',
+    parser.add_argument("--update", nargs=2, default=[], metavar='u',
                         help="u argumentos:[symbol, enabled]")
+    parser.add_argument("--apikey", nargs=1, default=[], metavar='a',
+                        help='a argumentos:[APIKEY]')
 
     value_c = parser.parse_args()
     value_u = parser.parse_args()
+    value_api = parser.parse_args()
+
     if any(value_c.create):
         create_db_table(value_c.create)
-        return True
-        
+        return True, None
+
     elif any(value_u.update):
         update_table(value_u.update)
-        return True
+        return True, None
 
     else:
-        return False
-    
-        
+        return False, value_api.apikey

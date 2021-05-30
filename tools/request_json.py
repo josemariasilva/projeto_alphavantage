@@ -6,7 +6,7 @@ from model.stock_model import StockModel
 from tools.parse import parse_last_week
 
 
-def integrate(symbol: str = "B3SA3.SAO") -> Iterable:
+def integrate(api_key: str, symbol: str = "B3SA3.SAO") -> Iterable:
     """
     requisita os dados da api, encapsula os dados em uma lista e filtra os dados pela ultima semana do mes
 
@@ -22,7 +22,7 @@ def integrate(symbol: str = "B3SA3.SAO") -> Iterable:
     URL: str = "https://www.alphavantage.co/query"
     QUERY = {"function": "TIME_SERIES_DAILY",
              "symbol": symbol,
-             "apikey": "P5J89M4KGGN95FLY"
+             "apikey": api_key
              }
 
     data_request: Response = requests.get(URL, params=QUERY).json()
