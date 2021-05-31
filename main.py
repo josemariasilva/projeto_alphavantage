@@ -46,6 +46,6 @@ if __name__ == "__main__":
     if result[0]:
         log.info("ALTERAÇÃO COMPLETA.")
     else:
-        t1 = threading.Timer(20, main(result))
+        t1 = threading.Timer(168, main(result))
         t1.start()
     
